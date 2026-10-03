@@ -26,9 +26,9 @@ Two Android apps that verify a device's identity over an NFC tap.
 ## Project status
 
 - [x] Phase 1 — toolchain bootstrap + project skeleton (both APKs build)
-- [ ] Phase 2 — shared protocol/chunking/hashing + unit tests
-- [ ] Phase 3 — Sender: HCE service, device-owner provisioning, EID fallback
-- [ ] Phase 4 — Checker: reader mode, enroll/verify, Room log, feedback
+- [x] Phase 2 — shared protocol/chunking/hashing + unit tests
+- [x] Phase 3 — Sender: HCE service, device-owner provisioning, EID fallback
+- [x] Phase 4 — Checker: reader mode, enroll/verify, Room log, feedback
 - [ ] Phase 5 — on-device testing (Pixel 8 + Pixel 7a)
 
 ## Building
