@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">NFC Sender</string>
+    <string name="apdu_service_description">Serves device identity hashes over NFC</string>
+    <string name="aid_group_description">Device identity hash exchange</string>
 </resources>
