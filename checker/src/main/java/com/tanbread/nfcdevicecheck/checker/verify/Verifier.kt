@@ -45,33 +45,21 @@ object Verifier {
             accepted = true,
             deviceLabel = outcome.device.label,
             mismatchedFields = "",
-            receivedEid = received.eid,
-            receivedImei1 = received.imei1,
-            receivedImei2 = received.imei2,
-            receivedAndroidVersion = received.androidVersion,
-            receivedBuildNumber = received.buildNumber,
+            receivedBundleJson = received.toJson(),
         )
 
         is VerifyOutcome.Deny -> CheckLog(
             accepted = false,
             deviceLabel = outcome.closest.label,
             mismatchedFields = outcome.comparison.mismatchedFields().joinToString(", "),
-            receivedEid = received.eid,
-            receivedImei1 = received.imei1,
-            receivedImei2 = received.imei2,
-            receivedAndroidVersion = received.androidVersion,
-            receivedBuildNumber = received.buildNumber,
+            receivedBundleJson = received.toJson(),
         )
 
         VerifyOutcome.NoEnrolledDevices -> CheckLog(
             accepted = false,
             deviceLabel = null,
             mismatchedFields = "no enrolled devices",
-            receivedEid = received.eid,
-            receivedImei1 = received.imei1,
-            receivedImei2 = received.imei2,
-            receivedAndroidVersion = received.androidVersion,
-            receivedBuildNumber = received.buildNumber,
+            receivedBundleJson = received.toJson(),
         )
     }
 }

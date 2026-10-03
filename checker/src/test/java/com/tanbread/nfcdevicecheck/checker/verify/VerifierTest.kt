@@ -11,21 +11,28 @@ class VerifierTest {
     private val enrolled = EnrolledDevice.fromBundle(
         label = "Pixel B",
         bundle = HashBundle.fromRaw(
-            eid = "89049032000000000001",
-            imei1 = "359187091234561",
-            imei2 = "359187091234562",
-            androidVersion = "17",
-            buildNumber = "BP2A.250605.031",
+            mapOf(
+                "Model" to "Pixel 8",
+                "Build number" to "BP2A.250605.031",
+                "Android version" to "17",
+                "GPU renderer" to "Adreno (TM) 740",
+            ),
         ),
     )
 
     private fun rawBundle(
-        eid: String = "89049032000000000001",
-        imei1: String = "359187091234561",
-        imei2: String = "359187091234562",
-        androidVersion: String = "17",
-        buildNumber: String = "BP2A.250605.031",
-    ) = HashBundle.fromRaw(eid, imei1, imei2, androidVersion, buildNumber)
+        model: String = "Pixel 8",
+        build: String = "BP2A.250605.031",
+        android: String = "17",
+        gpu: String = "Adreno (TM) 740",
+    ) = HashBundle.fromRaw(
+        mapOf(
+            "Model" to model,
+            "Build number" to build,
+            "Android version" to android,
+            "GPU renderer" to gpu,
+        ),
+    )
 
     @Test
     fun `exact match accepts`() {
@@ -35,11 +42,11 @@ class VerifierTest {
     }
 
     @Test
-    fun `changed imei denies with that field reported`() {
-        val outcome = Verifier.verify(rawBundle(imei2 = "999999999999999"), listOf(enrolled))
+    fun `changed build number denies with that field reported`() {
+        val outcome = Verifier.verify(rawBundle(build = "WRONG"), listOf(enrolled))
         assertTrue(outcome is VerifyOutcome.Deny)
         outcome as VerifyOutcome.Deny
-        assertEquals(listOf("IMEI 2"), outcome.comparison.mismatchedFields())
+        assertEquals(listOf("Build number"), outcome.comparison.mismatchedFields())
         assertEquals("Pixel B", outcome.closest.label)
     }
 
@@ -50,14 +57,15 @@ class VerifierTest {
     }
 
     @Test
-    fun `deny log records mismatched fields`() {
-        val received = rawBundle(imei1 = "000000000000000", buildNumber = "WRONG")
+    fun `deny log records mismatched fields and received bundle`() {
+        val received = rawBundle(model = "Pixel 9", gpu = "Immortalis-G715")
         val outcome = Verifier.verify(received, listOf(enrolled))
         val log = Verifier.toLog(outcome, received)
         assertEquals(false, log.accepted)
         assertEquals("Pixel B", log.deviceLabel)
-        assertTrue(log.mismatchedFields.contains("IMEI 1"))
-        assertTrue(log.mismatchedFields.contains("Build number"))
+        assertTrue(log.mismatchedFields.contains("Model"))
+        assertTrue(log.mismatchedFields.contains("GPU renderer"))
+        assertEquals(received, HashBundle.fromJson(log.receivedBundleJson))
     }
 
     @Test

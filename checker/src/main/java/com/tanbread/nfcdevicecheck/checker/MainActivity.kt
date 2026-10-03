@@ -365,7 +365,7 @@ fun CheckerScreenPreview() {
             onModeChange = {},
             enrolled = emptyList(),
             logs = emptyList(),
-            lastResult = TapResult.Denied("Device 1", listOf("IMEI 2")),
+            lastResult = TapResult.Denied("Device 1", listOf("Model")),
             onDeleteEnrolled = {},
             onClearHistory = {},
             onDismissResult = {},

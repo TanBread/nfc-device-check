@@ -2,6 +2,7 @@ package com.tanbread.nfcdevicecheck.sender.nfc
 
 import android.nfc.cardemulation.HostApduService
 import android.os.Bundle
+import com.tanbread.nfcdevicecheck.sender.identity.SystemInfoCollector
 import com.tanbread.nfcdevicecheck.shared.protocol.ApduProtocol
 
 /**
@@ -21,7 +22,11 @@ class SenderCardService : HostApduService() {
 
         if (ApduProtocol.isSelect(apdu)) {
             if (!ApduProtocol.isAidMatch(ApduProtocol.selectData(apdu))) return SW_NOT_FOUND
-            val payload = PayloadProvider.payload ?: EMPTY
+            val payload = PayloadProvider.payload ?: runCatching {
+                SystemInfoCollector.hashBundle(applicationContext)
+                    .toJson()
+                    .toByteArray(Charsets.UTF_8)
+            }.getOrDefault(EMPTY)
             sessionPayload = payload
             sessionChunks = ApduProtocol.split(payload)
             return ApduProtocol.SW_OK_BYTES

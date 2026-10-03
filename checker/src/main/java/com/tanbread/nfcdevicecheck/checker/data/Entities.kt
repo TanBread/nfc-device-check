@@ -10,35 +10,22 @@ import kotlinx.coroutines.flow.Flow
 
 /**
  * A device accepted by this Checker: the per-field hashes captured at enroll
- * time. Raw identity values never exist on the Checker at all.
+ * time, stored as the bundle's JSON. Raw system values never exist on the
+ * Checker at all.
  */
 @Entity(tableName = "enrolled_devices")
 data class EnrolledDevice(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val label: String,
-    val eid: String?,
-    val imei1: String?,
-    val imei2: String?,
-    val androidVersion: String?,
-    val buildNumber: String?,
+    val bundleJson: String,
     val enrolledAt: Long = System.currentTimeMillis(),
 ) {
-    fun toBundle(): HashBundle = HashBundle(
-        eid = eid,
-        imei1 = imei1,
-        imei2 = imei2,
-        androidVersion = androidVersion,
-        buildNumber = buildNumber,
-    )
+    fun toBundle(): HashBundle = HashBundle.fromJson(bundleJson) ?: HashBundle(emptyMap())
 
     companion object {
         fun fromBundle(label: String, bundle: HashBundle): EnrolledDevice = EnrolledDevice(
             label = label,
-            eid = bundle.eid,
-            imei1 = bundle.imei1,
-            imei2 = bundle.imei2,
-            androidVersion = bundle.androidVersion,
-            buildNumber = bundle.buildNumber,
+            bundleJson = bundle.toJson(),
         )
     }
 }
@@ -51,11 +38,7 @@ data class CheckLog(
     val accepted: Boolean,
     val deviceLabel: String?,
     val mismatchedFields: String,
-    val receivedEid: String?,
-    val receivedImei1: String?,
-    val receivedImei2: String?,
-    val receivedAndroidVersion: String?,
-    val receivedBuildNumber: String?,
+    val receivedBundleJson: String,
 )
 
 @Dao

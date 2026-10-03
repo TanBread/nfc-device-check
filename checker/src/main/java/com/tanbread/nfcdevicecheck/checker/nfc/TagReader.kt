@@ -38,7 +38,19 @@ class TagReader(
             // HEADER
             val headerResponse = connection.transceive(assembler.nextCommand())
             requireSw(headerResponse, ApduProtocol.SW_OK, "HEADER")
-            require(assembler.onHeader(dataOf(headerResponse))) { "bad/unsupported header" }
+            if (!assembler.onHeader(dataOf(headerResponse))) {
+                val header = ApduProtocol.parseHeader(dataOf(headerResponse))
+                throw IllegalStateException(
+                    when {
+                        header == null -> "HEADER: malformed response"
+                        header.version != ApduProtocol.PROTOCOL_VERSION ->
+                            "HEADER: app version mismatch (sender speaks v${header.version}, " +
+                                "this app expects v${ApduProtocol.PROTOCOL_VERSION}) — " +
+                                "install the same release on both phones"
+                        else -> "HEADER: sender rejected the session"
+                    },
+                )
+            }
 
             // CHUNKs until complete
             while (!assembler.isComplete) {
@@ -63,7 +75,13 @@ class TagReader(
         val sw = ((response[response.size - 2].toInt() and 0xFF) shl 8) or
             (response[response.size - 1].toInt() and 0xFF)
         if (sw != expected) {
-            throw IllegalStateException("$step: unexpected SW %04X".format(sw))
+            val hint = if (step == "SELECT" && sw == 0x6A82) {
+                " — sender not reachable: open the Sender app, keep its screen " +
+                    "on, and hold the phones back-to-back"
+            } else {
+                ""
+            }
+            throw IllegalStateException("$step: unexpected SW %04X".format(sw) + hint)
         }
     }
 }

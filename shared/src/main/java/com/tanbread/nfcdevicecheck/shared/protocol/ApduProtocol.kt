@@ -9,7 +9,7 @@ package com.tanbread.nfcdevicecheck.shared.protocol
  *   3. OP_DONE    -> session closed (9000)
  */
 object ApduProtocol {
-    const val PROTOCOL_VERSION: Int = 1
+    const val PROTOCOL_VERSION: Int = 2
 
     /** 8-byte AID: F0 "NFCKEY" 01. */
     val AID: ByteArray = byteArrayOf(

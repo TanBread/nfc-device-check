@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [EnrolledDevice::class, CheckLog::class],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 abstract class CheckerDatabase : RoomDatabase() {
@@ -24,7 +24,9 @@ abstract class CheckerDatabase : RoomDatabase() {
                     context.applicationContext,
                     CheckerDatabase::class.java,
                     "checker.db",
-                ).build().also { instance = it }
+                )
+                    .fallbackToDestructiveMigration(dropAllTables = true)
+                    .build().also { instance = it }
             }
     }
 }

@@ -77,7 +77,7 @@ class ApduProtocolTest {
 
     @Test
     fun `assembler rebuilds payload from chunk stream`() {
-        val json = """{"eid":"aa","imei1":"bb","imei2":"cc","androidVersion":"dd","buildNumber":"ee"}"""
+        val json = """{"Model":"aa","Build number":"bb","Android version":"cc"}"""
         val payload = json.toByteArray(Charsets.UTF_8)
         val chunks = ApduProtocol.split(payload)
 
